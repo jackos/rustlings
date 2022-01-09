@@ -4,5 +4,6 @@
 fn call_me() {}
 
 fn main() {
+    let x = 10;
     call_me();
 }
