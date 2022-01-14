@@ -3,7 +3,8 @@
 
 // you can modify anything EXCEPT for this function's sig
 fn print_number(maybe_number: Option<u16>) {
-    println!("printing: {}", maybe_number.unwrap());
+    let maybe_number = maybe_number.unwrap();
+    println!("printing: {maybe_number}");
 }
 
 fn main() {
