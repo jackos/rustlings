@@ -3,7 +3,10 @@
 // Basically, this is the same as From. The main difference is that this should return a Result type
 // instead of the target type itself.
 // You can read more about it at https://doc.rust-lang.org/std/convert/trait.TryFrom.html
-use std::convert::{TryFrom, TryInto};
+use std::{
+    convert::{TryFrom, TryInto},
+    i16,
+};
 
 #[derive(Debug, PartialEq)]
 struct Color {
@@ -21,8 +24,6 @@ enum IntoColorError {
     IntConversion,
 }
 
-// I AM NOT DONE
-
 // Your task is to complete this implementation
 // and return an Ok result of inner type Color.
 // You need to create an implementation for a tuple of three integers,
@@ -32,10 +33,22 @@ enum IntoColorError {
 // but the slice implementation needs to check the slice length!
 // Also note that correct RGB color values must be integers in the 0..=255 range.
 
+fn outside_range_check(tup: i16) -> Result<(), IntoColorError> {
+    if tup < 0 || tup > 255 {
+        return Err(IntoColorError::IntConversion);
+    }
+    Ok(())
+}
+
 // Tuple implementation
 impl TryFrom<(i16, i16, i16)> for Color {
     type Error = IntoColorError;
     fn try_from(tuple: (i16, i16, i16)) -> Result<Self, Self::Error> {
+        Ok(Color {
+            red: tuple.0.try_into().or(Err(IntoColorError::IntConversion))?,
+            green: tuple.1.try_into().or(Err(IntoColorError::IntConversion))?,
+            blue: tuple.2.try_into().or(Err(IntoColorError::IntConversion))?,
+        })
     }
 }
 
@@ -43,6 +56,11 @@ impl TryFrom<(i16, i16, i16)> for Color {
 impl TryFrom<[i16; 3]> for Color {
     type Error = IntoColorError;
     fn try_from(arr: [i16; 3]) -> Result<Self, Self::Error> {
+        Ok(Color {
+            red: arr[0].try_into().or(Err(IntoColorError::IntConversion))?,
+            green: arr[1].try_into().or(Err(IntoColorError::IntConversion))?,
+            blue: arr[2].try_into().or(Err(IntoColorError::IntConversion))?,
+        })
     }
 }
 
@@ -50,6 +68,14 @@ impl TryFrom<[i16; 3]> for Color {
 impl TryFrom<&[i16]> for Color {
     type Error = IntoColorError;
     fn try_from(slice: &[i16]) -> Result<Self, Self::Error> {
+        if slice.len() != 3 {
+            return Err(IntoColorError::BadLen);
+        }
+        Ok(Color {
+            red: slice[0].try_into().or(Err(IntoColorError::IntConversion))?,
+            green: slice[1].try_into().or(Err(IntoColorError::IntConversion))?,
+            blue: slice[2].try_into().or(Err(IntoColorError::IntConversion))?,
+        })
     }
 }
 
